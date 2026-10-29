@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BXL WhatsApp Hub - Nales Official</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Plus Jakarta Sans & Orbitron -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#4c1d95',
+                            950: '#0d0714',
+                        },
+                        neon: {
+                            purple: '#b026ff',
+                            magenta: '#e012ff',
+                            violet: '#7000ff',
+                            glow: '#d946ef'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        tech: ['Orbitron', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'neon-sm': '0 0 10px rgba(176, 38, 255, 0.4)',
+                        'neon-md': '0 0 20px rgba(176, 38, 255, 0.6), 0 0 40px rgba(112, 0, 255, 0.3)',
+                        'neon-lg': '0 0 30px rgba(176, 38, 255, 0.8), 0 0 60px rgba(224, 18, 255, 0.4)',
+                        'glow-box': 'inset 0 0 15px rgba(176, 38, 255, 0.2), 0 0 25px rgba(124, 58, 237, 0.4)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Keyframe Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.6; filter: drop-shadow(0 0 15px #b026ff); }
+            50% { opacity: 1; filter: drop-shadow(0 0 30px #e012ff); }
+        }
+        @keyframes borderScan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .animate-float {
+            animation: float 5s ease-in-out infinite;
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        /* Canvas Overlay */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d0714;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6d28d9;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b026ff;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-card {
+            background: rgba(18, 10, 31, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(176, 38, 255, 0.25);
+        }
+        .glass-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card-hover:hover {
+            border-color: rgba(224, 18, 255, 0.6);
+            box-shadow: 0 0 25px rgba(176, 38, 255, 0.35);
+            transform: translateY(-3px);
+        }
+
+        /* Neon Text Effects */
+        .neon-text-purple {
+            color: #f3e8ff;
+            text-shadow: 0 0 8px rgba(176, 38, 255, 0.8), 0 0 20px rgba(176, 38, 255, 0.5);
+        }
+        .neon-text-magenta {
+            color: #fae8ff;
+            text-shadow: 0 0 8px rgba(224, 18, 255, 0.8), 0 0 20px rgba(224, 18, 255, 0.5);
+        }
+
+        /* Animated Gradient Borders */
+        .gradient-border-box {
+            position: relative;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, rgba(13,7,20,0.9), rgba(26,12,46,0.9));
+        }
+        .gradient-border-box::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 1.05rem;
+            padding: 1px;
+            background: linear-gradient(90deg, #b026ff, #7000ff, #e012ff, #b026ff);
+            background-size: 300% 300%;
+            animation: borderScan 4s linear infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-[#08040f] text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-brand-600 selection:text-white relative overflow-x-hidden">
+
+    <!-- Interactive Canvas Particles Background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Ambient Glowing Orbs -->
+    <div class="fixed top-[-100px] left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-brand-600/20 rounded-full blur-[120px] pointer-events-none z-0 animate-pulse-glow"></div>
+    <div class="fixed bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-neon-magenta/15 rounded-full blur-[140px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-[20%] left-[-100px] w-[350px] h-[350px] bg-neon-violet/20 rounded-full blur-[130px] pointer-events-none z-0"></div>
+
+    <!-- Main Content Container -->
+    <div class="relative z-10 max-w-4xl mx-auto px-4 py-8 md:py-12 w-full space-y-8">
+
+        <!-- HEADER & HERO SECTION -->
+        <header class="text-center space-y-6">
+            <!-- Anime Avatar Profile / Banner -->
+            <div class="relative inline-block group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-neon-purple via-neon-magenta to-brand-500 rounded-full blur-md opacity-75 group-hover:opacity-100 transition duration-500 group-hover:scale-105"></div>
+                <div class="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1 bg-[#0d0714] overflow-hidden border-2 border-neon-purple/50">
+                    <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=400&auto=format&fit=crop" 
+                         alt="BXL Anime Character" 
+                         class="w-full h-full object-cover rounded-full transform transition duration-500 group-hover:scale-110"
+                         onerror="this.src='https://placehold.co/300x300/1e0e38/b026ff?text=NALES+BXL'">
+                </div>
+                <!-- Status Badge -->
+                <div class="absolute bottom-2 right-2 bg-emerald-500 border-2 border-[#0d0714] w-5 h-5 rounded-full shadow-neon-sm" title="System Online"></div>
+            </div>
+
+            <!-- Title & Branding -->
+            <div class="space-y-2">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-900/60 border border-brand-500/30 text-neon-purple text-xs font-semibold uppercase tracking-widest backdrop-blur-md">
+                    <i class="fa-solid font-bold fa-bolt text-amber-400"></i> NALES OFFICIAL SYSTEM
+                </div>
+                <h1 class="text-3xl md:text-5xl font-extrabold font-tech tracking-wider neon-text-purple uppercase">
+                    💜 BXL BUG WHATSAPP
+                </h1>
+                <p class="text-slate-400 text-sm md:text-base max-w-lg mx-auto leading-relaxed">
+                    Website layanan BXL hadir dengan tampilan modern, efek aura ungu neon, tema hitam elegan, dan sistem diagnostik cepat.
+                </p>
+            </div>
+        </header>
+
+        <!-- IMPORTANT INFORMATION CARD -->
+        <section class="glass-card rounded-2xl p-6 border border-brand-500/20 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-brand-500/10 rounded-bl-full pointer-events-none"></div>
+            
+            <h2 class="text-lg font-bold font-tech text-neon-purple flex items-center gap-2.5 mb-4 border-b border-brand-500/20 pb-3">
+                <i class="fa-solid fa-triangle-exclamation text-amber-400 text-xl"></i>
+                ✦ INFORMASI PENTING
+            </h2>
+
+            <p class="text-xs md:text-sm text-slate-300 mb-4">
+                Pastikan nomor WhatsApp Anda sudah ditautkan dengan benar dan aplikasi WhatsApp dapat digunakan.
+            </p>
+
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
+                <li class="flex items-start gap-2.5 p-2.5 rounded-xl bg-brand-950/50 border border-brand-500/10 text-slate-300">
+                    <i class="fa-solid fa-shield-halved text-neon-purple mt-0.5"></i>
+                    <span>❖ Gunakan layanan dengan bijak.</span>
+                </li>
+                <li class="flex items-start gap-2.5 p-2.5 rounded-xl bg-brand-950/50 border border-brand-500/10 text-slate-300">
+                    <i class="fa-solid fa-list-ol text-neon-purple mt-0.5"></i>
+                    <span>❖ Masukkan nomor dengan format yang benar.</span>
+                </li>
+                <li class="flex items-start gap-2.5 p-2.5 rounded-xl bg-brand-950/50 border border-brand-500/10 text-slate-300">
+                    <i class="fa-solid fa-user-slash text-neon-purple mt-0.5"></i>
+                    <span>❖ Jangan gunakan layanan untuk mengganggu orang lain.</span>
+                </li>
+                <li class="flex items-start gap-2.5 p-2.5 rounded-xl bg-brand-950/50 border border-brand-500/10 text-slate-300">
+                    <i class="fa-solid fa-key text-neon-purple mt-0.5"></i>
+                    <span>❖ Pastikan Anda memiliki izin untuk menguji nomor/perangkat.</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- MAIN FORM SECTION: NUMBER & SERVICE SELECTION -->
+        <section class="gradient-border-box p-6 md:p-8 shadow-neon-md relative">
+            <div class="flex items-center justify-between border-b border-brand-500/20 pb-4 mb-6">
+                <h2 class="text-xl font-extrabold font-tech text-white flex items-center gap-3">
+                    <i class="fa-solid fa-mobile-screen-button text-neon-magenta text-2xl"></i>
+                    📱 BUG NOMOR WHATSAPP
+                </h2>
+                <span class="text-xs bg-neon-purple/20 text-neon-purple px-2.5 py-1 rounded-full border border-neon-purple/40 font-mono">v3.8 Live</span>
+            </div>
+
+            <form id="bxlForm" onsubmit="handleSubmit(event)" class="space-y-6">
+                
+                <!-- Number Input -->
+                <div class="space-y-2">
+                    <label for="targetNumber" class="block text-sm font-semibold text-slate-200">
+                        Masukkan Nomor Tujuan
+                    </label>
+                    <p class="text-xs text-slate-400">
+                        Silakan masukkan nomor WhatsApp yang ingin Anda periksa atau gunakan untuk pengujian yang telah mendapat izin.
+                    </p>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-brand-400">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                        <input type="tel" 
+                               id="targetNumber" 
+                               name="targetNumber"
+                               placeholder="Contoh format nomor: 628xxxxxxxxxx" 
+                               required
+                               class="w-full pl-11 pr-4 py-3.5 bg-[#0e071a] border border-brand-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-neon-purple focus:ring-2 focus:ring-neon-purple/50 transition duration-200 font-mono text-sm md:text-base">
+                    </div>
+                    <span id="numberError" class="hidden text-xs text-rose-400 font-medium flex items-center gap-1 mt-1">
+                        <i class="fa-solid fa-circle-exclamation"></i> Format nomor tidak valid! Gunakan diawali 628... (8-15 digit angka).
+                    </span>
+                </div>
+
+                <!-- Service Mode Selection -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-semibold text-slate-200">
+                        ✦ PILIH MODE LAYANAN
+                    </label>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        
+                        <!-- Option 1: DELAY HIGH -->
+                        <label class="relative flex flex-col p-4 rounded-xl border border-brand-500/30 bg-[#0d0714]/80 cursor-pointer hover:border-neon-purple transition-all duration-300 group has-[:checked]:border-neon-purple has-[:checked]:bg-brand-900/40 has-[:checked]:shadow-neon-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-gauge-high text-amber-400 text-lg"></i>
+                                    <span class="font-bold font-tech text-white text-sm">1. DELAY HIGH</span>
+                                </div>
+                                <input type="radio" name="serviceMode" value="DELAY HIGH" class="w-4 h-4 text-neon-purple bg-transparent border-brand-500 focus:ring-neon-purple focus:ring-offset-0" checked>
+                            </div>
+                            <p class="text-xs text-slate-400 leading-relaxed group-hover:text-slate-300">
+                                Pengujian respons dan latensi pada sistem milik sendiri.
+                            </p>
+                        </label>
+
+                        <!-- Option 2: DELAY HARD -->
+                        <label class="relative flex flex-col p-4 rounded-xl border border-brand-500/30 bg-[#0d0714]/80 cursor-pointer hover:border-neon-purple transition-all duration-300 group has-[:checked]:border-neon-purple has-[:checked]:bg-brand-900/40 has-[:checked]:shadow-neon-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-fire-flame-curved text-orange-500 text-lg"></i>
+                                    <span class="font-bold font-tech text-white text-sm">2. DELAY HARD</span>
+                                </div>
+                                <input type="radio" name="serviceMode" value="DELAY HARD" class="w-4 h-4 text-neon-purple bg-transparent border-brand-500 focus:ring-neon-purple focus:ring-offset-0">
+                            </div>
+                            <p class="text-xs text-slate-400 leading-relaxed group-hover:text-slate-300">
+                                Pengujian performa dengan batas aman pada sistem yang Anda miliki/diizinkan.
+                            </p>
+                        </label>
+
+                        <!-- Option 3: FORCE CLOSE -->
+                        <label class="relative flex flex-col p-4 rounded-xl border border-brand-500/30 bg-[#0d0714]/80 cursor-pointer hover:border-neon-purple transition-all duration-300 group has-[:checked]:border-neon-purple has-[:checked]:bg-brand-900/40 has-[:checked]:shadow-neon-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-[#fae8ff] fa-microchip text-indigo-400 text-lg"></i>
+                                    <span class="font-bold font-tech text-white text-sm">3. FORCE CLOSE</span>
+                                </div>
+                                <input type="radio" name="serviceMode" value="DIAGNOSTIK KOMPATIBILITAS" class="w-4 h-4 text-neon-purple bg-transparent border-brand-500 focus:ring-neon-purple focus:ring-offset-0">
+                            </div>
+                            <p class="text-xs text-slate-400 leading-relaxed group-hover:text-slate-300">
+                                Pemeriksaan kompatibilitas & diagnostik aplikasi secara aman.
+                            </p>
+                        </label>
+
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-2">
+                    <button type="submit" 
+                            id="submitBtn"
+                            class="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-brand-600 via-neon-purple to-neon-magenta text-white font-bold font-tech text-base md:text-lg tracking-wider uppercase shadow-neon-md hover:shadow-neon-lg hover:scale-[1.01] active:scale-[0.99] transition duration-300 flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-paper-plane text-xl animate-bounce"></i>
+                        <span>LANJUTKAN KE BOT BXL</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- INSTRUCTIONS / STEPS GUIDE -->
+        <section class="glass-card rounded-2xl p-6 border border-brand-500/20">
+            <h2 class="text-base md:text-lg font-bold font-tech text-white flex items-center gap-2.5 mb-4">
+                <i class="fa-solid fa-rocket text-neon-magenta"></i>
+                🚀 PETUNJUK LANJUTKAN KE BOT
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm text-slate-300">
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-[#0e071a]/90 border border-brand-500/15">
+                    <span class="flex-shrink-0 w-7 h-7 rounded-full bg-neon-purple/20 text-neon-purple font-bold flex items-center justify-center border border-neon-purple/40">1</span>
+                    <span>Masukkan nomor tujuan dengan format 628xxx.</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-[#0e071a]/90 border border-brand-500/15">
+                    <span class="flex-shrink-0 w-7 h-7 rounded-full bg-neon-purple/20 text-neon-purple font-bold flex items-center justify-center border border-neon-purple/40">2</span>
+                    <span>Pilih opsi layanan yang tersedia.</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-[#0e071a]/90 border border-brand-500/15">
+                    <span class="flex-shrink-0 w-7 h-7 rounded-full bg-neon-purple/20 text-neon-purple font-bold flex items-center justify-center border border-neon-purple/40">3</span>
+                    <span>Periksa kembali data yang dimasukkan.</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-[#0e071a]/90 border border-brand-500/15">
+                    <span class="flex-shrink-0 w-7 h-7 rounded-full bg-neon-purple/20 text-neon-purple font-bold flex items-center justify-center border border-neon-purple/40">4</span>
+                    <span>Tekan tombol <b>LANJUTKAN KE BOT</b>.</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-[#0e071a]/90 border border-brand-500/15">
+                    <span class="flex-shrink-0 w-7 h-7 rounded-full bg-neon-purple/20 text-neon-purple font-bold flex items-center justify-center border border-neon-purple/40">5</span>
+                    <span>WhatsApp akan terbuka menuju bot bantuan resmi BXL.</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-[#0e071a]/90 border border-brand-500/15">
+                    <span class="flex-shrink-0 w-7 h-7 rounded-full bg-neon-purple/20 text-neon-purple font-bold flex items-center justify-center border border-neon-purple/40">6</span>
+                    <span>Tekan tombol kirim di WhatsApp untuk konfirmasi.</span>
+                </div>
+            </div>
+
+            <!-- Direct Contact Button Card -->
+            <div class="mt-6 p-4 rounded-xl bg-gradient-to-r from-brand-950 via-brand-900 to-brand-950 border border-brand-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="space-y-1 text-center sm:text-left">
+                    <div class="text-xs uppercase font-bold text-slate-400 tracking-wider">Bot Bantuan Resmi BXL</div>
+                    <div class="text-base font-mono font-bold text-neon-purple">6283129970042</div>
+                </div>
+                <a href="https://wa.me/6283129970042?text=Halo%20Admin%20BXL%20Official,%20saya%20butuh%20bantuan%20layanan." 
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs md:text-sm flex items-center gap-2 shadow-lg transition duration-200">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>💬 HUBUNGI BOT BXL</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- DONOR LOCKED GROUP SECTION -->
+        <section class="glass-card rounded-2xl p-6 border border-amber-500/30 relative overflow-hidden">
+            <div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-400 text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-lock text-xs"></i>
+                <span>LOCKED — DONOR ONLY</span>
+            </div>
+
+            <div class="space-y-4">
+                <h2 class="text-lg font-bold font-tech text-amber-300 flex items-center gap-2">
+                    <i class="fa-solid fa-users-slash text-amber-400 text-xl"></i>
+                    🔒 BUG GRUP — KHUSUS DONATUR
+                </h2>
+
+                <div class="inline-block text-xs font-mono px-3 py-1 bg-amber-950/60 text-amber-200 rounded border border-amber-500/20">
+                    ⛓️ PRIVATE DONOR ACCESS ⛓️
+                </div>
+
+                <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+                    Fitur grup khusus donatur saat ini terkunci. Akses hanya diberikan kepada donatur yang sudah terverifikasi oleh admin.
+                </p>
+
+                <div class="pt-2">
+                    <button onclick="requestDonorAccess()" 
+                            class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-extrabold font-tech text-xs md:text-sm flex items-center gap-2 shadow-lg transition duration-200">
+                        <i class="fa-solid fa-key"></i>
+                        <span>🔒 MINTA AKSES DONATUR</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="text-center pt-8 border-t border-brand-500/20 space-y-3">
+            <p class="text-xs font-tech text-neon-purple tracking-widest uppercase">
+                💜 BXL BUG — NALES OFFICIAL
+            </p>
+            <p class="text-xs text-slate-400">
+                Modern Interface • Purple Aura • Anime Edition
+            </p>
+            <p class="text-[11px] text-slate-500 max-w-md mx-auto">
+                Gunakan layanan secara bertanggung jawab dan hormati keamanan serta privasi pengguna WhatsApp lainnya.
+            </p>
+            <p class="text-[11px] font-mono text-slate-600 pt-2">
+                © 2026 BXL BUG — All Rights Reserved.
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- NOTIFICATION / STATUS MODAL -->
+    <div id="statusModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-card max-w-md w-full rounded-2xl p-6 border border-brand-500/40 text-center space-y-4 shadow-neon-lg transform scale-95 transition-transform duration-300" id="modalContent">
+            <div id="modalIcon" class="w-16 h-16 mx-auto rounded-full bg-neon-purple/20 border border-neon-purple flex items-center justify-center text-3xl text-neon-purple">
+                <i class="fa-solid fa-spinner animate-spin"></i>
+            </div>
+            
+            <h3 id="modalTitle" class="text-xl font-bold font-tech text-white">
+                Memproses Permintaan...
+            </h3>
+            
+            <p id="modalBody" class="text-xs md:text-sm text-slate-300 leading-relaxed">
+                Menyiapkan data konfirmasi ke WhatsApp Bot Resmi BXL...
+            </p>
+
+            <div id="modalActions" class="pt-2 flex justify-center gap-3 hidden">
+                <button onclick="closeModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300">
+                    Batal
+                </button>
+                <a id="redirectWaBtn" href="#" target="_blank" onclick="closeModal()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white flex items-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>Lanjutkan Ke WhatsApp</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic & Particle Canvas Script -->
+    <script>
+        // --- 1. Interactive Canvas Particles Effect ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        const particleCount = 45;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.6;
+                this.speedY = (Math.random() - 0.5) * 0.6;
+                this.alpha = Math.random() * 0.6 + 0.2;
+                // Purple / Pink glowing hues
+                const colors = ['#b026ff', '#e012ff', '#7000ff', '#8b5cf6'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            resizeCanvas();
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        window.onload = function() {
+            initParticles();
+            animateParticles();
+        };
+
+        // --- 2. Form Validation & WhatsApp Redirect Handling ---
+        const botNumber = "6283129970042";
+
+        function validateNumber(num) {
+            // Must begin with 628 and contain 8 to 15 digits
+            const cleanNum = num.trim().replace(/[^0-9]/g, '');
+            const regex = /^628[0-9]{8,12}$/;
+            return { valid: regex.test(cleanNum), cleaned: cleanNum };
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            const numberInput = document.getElementById('targetNumber').value;
+            const errorElement = document.getElementById('numberError');
+            const validation = validateNumber(numberInput);
+
+            if (!validation.valid) {
+                errorElement.classList.remove('hidden');
+                document.getElementById('targetNumber').focus();
+                return;
+            } else {
+                errorElement.classList.add('hidden');
+            }
+
+            // Get selected mode
+            const selectedMode = document.querySelector('input[name="serviceMode"]:checked').value;
+
+            // Show Processing Modal
+            showModal({
+                title: "MENYIAPKAN DATA",
+                body: "Sedang memproses permintaan pengujian untuk nomor " + validation.cleaned + " dengan mode " + selectedMode + "...",
+                loading: true
+            });
+
+            // Simulate quick verification step before opening WhatsApp
+            setTimeout(() => {
+                const messageText = `Halo Admin BXL Official,\nSaya ingin konfirmasi bantuan pengujian:\n\n• Nomor Tujuan: ${validation.cleaned}\n• Mode Layanan: ${selectedMode}\n• Status: Siap Diproses\n\nTerima kasih.`;
+                const encodedMsg = encodeURIComponent(messageText);
+                const waUrl = `https://wa.me/${botNumber}?text=${encodedMsg}`;
+
+                showModal({
+                    title: "PERMINTAAN SIAP",
+                    body: "Silakan lanjutkan ke aplikasi WhatsApp resmi BXL untuk mengirim pesan konfirmasi.",
+                    loading: false,
+                    success: true,
+                    waUrl: waUrl
+                });
+            }, 1200);
+        }
+
+        function requestDonorAccess() {
+            const messageText = `Halo Admin BXL Official,\nSaya ingin meminta verifikasi dan AKSES DONATUR GRUP KHUSUS (Locked Donor Access).\n\nMohon info selengkapnya.`;
+            const encodedMsg = encodeURIComponent(messageText);
+            const waUrl = `https://wa.me/${botNumber}?text=${encodedMsg}`;
+
+            showModal({
+                title: "AKSES DONATUR",
+                body: "Anda akan diarahkan ke Bot WhatsApp Resmi BXL untuk verifikasi status donatur.",
+                loading: false,
+                success: true,
+                waUrl: waUrl
+            });
+        }
+
+        // --- 3. Modal Notification System ---
+        function showModal({ title, body, loading, success, waUrl }) {
+            const modal = document.getElementById('statusModal');
+            const modalContent = document.getElementById('modalContent');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalActions = document.getElementById('modalActions');
+            const redirectWaBtn = document.getElementById('redirectWaBtn');
+
+            modalTitle.innerText = title;
+            modalBody.innerText = body;
+
+            if (loading) {
+                modalIcon.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-neon-purple"></i>`;
+                modalActions.classList.add('hidden');
+            } else if (success) {
+                modalIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+                modalActions.classList.remove('hidden');
+                redirectWaBtn.href = waUrl;
+            }
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('statusModal');
+            const modalContent = document.getElementById('modalContent');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.add('scale-95');
+        }
+    </script>
+</body>
+</html>
